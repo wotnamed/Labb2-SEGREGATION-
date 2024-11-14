@@ -42,7 +42,7 @@ class NeighboursApp:
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
         dist = [0.2, 0.2, 0.40, 0.2]
-        possible = ["Red", "Blue", "Green", None]
+        possible = ["Red", "Blue", "Green", "Yellow"]
         n_locations = 2500 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
         x = int(n_locations**0.5)
@@ -51,7 +51,8 @@ class NeighboursApp:
             self.world.append([])
         for i in self.world:
             for i in range(x):
-                self.world[i].append(Actor(random.choices(possible, dist) for i in possible if i != None) )  # TODO add "None" for blank space
+                value = random.choices(possible, dist)
+                self.world[i].append(Actor(value))  # TODO add "None" for blank space
         print(self.world)
 
 
