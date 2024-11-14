@@ -63,22 +63,43 @@ class NeighboursApp:
         # Adjust screen size based on the number of locations
         self.fix_screen_size(n_locations)
 
+    def test_neighbours(self, row_number, column_number):
+        subject = self.world[row_number][column_number]
+        total_rows = len(self.world) - 1
+        total_columns = len(self.world[0]) - 1
+        row = self.world[row_number]
+        column = self.world[row_number][column_number]
 
+        check_range = [-1, 0, 1]
+
+        total_neighbours = 0
+        bad_neighbours = 0
+
+        for diff_y in check_range:
+            for diff_x in check_range:
+                if diff_y + diff_x != 0:
+                    if (row_number + diff_y <= total_rows) and (column_number + diff_x <= total_columns) and (row_number + diff_y >= 0) and (column_number + diff_x >= 0):
+                        neighbour = self.world[row_number+diff_y][column_number+diff_x]
+                        total_neighbours += 1
+
+                        if neighbour is not (None or subject):
+                            bad_neighbours += 1
+
+        return bad_neighbours/total_neighbours
 
     def update_world(self):
         threshold = 0.7
         # TODO create logic for moving the actors
-        for row in self.world:
-            for a in range(len(row)):
-                print(a)
-                if row[a] is not None:
-                    bad_neighbours = []
-                    if a is not (0 or len(row)):
-                        if row[a-1] is not (row[a] or None):
-                            bad_neighbours.append(row[a-1])
-                    if a is not (0 or len(row)):
-                        if row[a+1] is not (row[a] or None):
-                            bad_neighbours.append(row[a+1])
+
+        unhappy = []
+
+        for row in range(len(self.world)-1):
+            for a in range(len(self.world[row])-1):
+                if self.test_neighbours(row, a) > threshold:
+                    unhappy.append((row,a))
+
+        print(unhappy)
+
 
 
 
