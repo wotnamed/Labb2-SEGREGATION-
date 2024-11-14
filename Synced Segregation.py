@@ -35,10 +35,6 @@ class NeighboursApp:
 
         # init an empty world
 
-    def agent_chooser(self, weights):
-        seq1 = random.randint(0, 100)
-        if seq1/100 > weights[2]:
-            return "empty"
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
         dist = [0.2, 0.2, 0.40, 0.2]
