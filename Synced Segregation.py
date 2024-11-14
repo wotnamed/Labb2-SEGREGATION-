@@ -42,7 +42,7 @@ class NeighboursApp:
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
         dist = [0.2, 0.2, 0.40, 0.2]
-        possible = ["Red", "Blue", "Green", "Yellow"]
+        possible = ["Red", "Blue", "Green", None]
         n_locations = 2500 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
         x = int(n_locations**0.5)
@@ -51,9 +51,11 @@ class NeighboursApp:
             self.world.append([])
         for i in self.world:
             for i in range(x):
-                value = random.choices(possible, dist)
-                self.world[i].append(Actor(value))  # TODO add "None" for blank space
-        print(self.world)
+                value = random.choices(possible, dist)[0]
+                if value is not None:
+                    self.world[i].append(Actor(value))
+                else:
+                    self.world[i].append(None)
 
 
         # coordinates: list[y][x]
@@ -66,6 +68,18 @@ class NeighboursApp:
     def update_world(self):
         threshold = 0.7
         # TODO create logic for moving the actors
+        for row in self.world:
+            for a in range(len(row)):
+                print(a)
+                if row[a] is not None:
+                    bad_neighbours = []
+                    if a is not (0 or len(row)):
+                        if row[a-1] is not (row[a] or None):
+                            bad_neighbours.append(row[a-1])
+                    if a is not (0 or len(row)):
+                        if row[a+1] is not (row[a] or None):
+                            bad_neighbours.append(row[a+1])
+
 
 
     def is_valid_location(self, size, row, col):
