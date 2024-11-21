@@ -17,7 +17,7 @@ class NeighboursApp:
         self.height = 500
         self.margin = 50
         self.dot_size = 0
-        self.interval = 0.45  # in seconds
+        self.interval = 0.05  # in seconds
 
         # Initialize tkinter canvas
         self.root = root
@@ -37,7 +37,7 @@ class NeighboursApp:
 
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
-        dist = [0.2, 0.2, 0.40, 0.2]
+        dist = [0.2, 0.3, 0.3, 0.2]
         possible = ["Red", "Blue", "Green", None]
         n_locations = 2500 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
@@ -60,12 +60,9 @@ class NeighboursApp:
         self.fix_screen_size(n_locations)
 
     def test_neighbours(self, row_number, column_number):
-        subject = self.world[row_number][column_number]
-        total_rows = len(self.world) - 1
-        total_columns = len(self.world[0]) - 1
-        row = self.world[row_number]
-        column = self.world[row_number][column_number]
-
+        subject = self.world[row_number][column_number].color
+        total_rows = len(self.world)
+        total_columns = len(self.world[0])
         check_range = [-1, 0, 1]
 
         total_neighbours = 0
@@ -73,30 +70,46 @@ class NeighboursApp:
 
         for diff_y in check_range:
             for diff_x in check_range:
-                if diff_y + diff_x != 0:
-                    if (row_number + diff_y <= total_rows) and (column_number + diff_x <= total_columns) and (row_number + diff_y >= 0) and (column_number + diff_x >= 0):
-                        neighbour = self.world[row_number+diff_y][column_number+diff_x]
-                        total_neighbours += 1
+                if diff_y == 0 and diff_x == 0:
+                    continue
+                neighbour_row = row_number + diff_y
+                neighbour_col = column_number + diff_x
 
-                        if neighbour is not (None or subject):
-                            bad_neighbours += 1
+                if 0 <= neighbour_row < total_rows and 0 <= neighbour_col < total_columns:
+                    neighbour = self.world[neighbour_row][neighbour_col]
+                    total_neighbours += 1
+                    if neighbour is not None and neighbour.color != subject:
+                        bad_neighbours += 1
 
-        return bad_neighbours/total_neighbours
+        return 1-(bad_neighbours/total_neighbours)
 
     def update_world(self):
         threshold = 0.7
+        size = len(self.world)
+        unhappy = []
+        satisfaction = 0
         # TODO create logic for moving the actors
 
-        unhappy = []
+        for row in range(len(self.world)):
+            for col in range(len(self.world[row])):
+                if self.world[row][col] is None:
+                    continue
+                satisfaction = self.test_neighbours(row, col)
+                if satisfaction < threshold:
+                    unhappy.append((row,col))
 
-        for row in range(len(self.world)-1):
-            for a in range(len(self.world[row])-1):
-                if self.test_neighbours(row, a) > threshold:
-                    unhappy.append((row,a))
+        for row, col in unhappy:
+            actor = self.world[row][col]
+            self.world[row][col] = None  # Remove actor from current location
 
-        print(unhappy)
-
-
+            # Find a new empty location
+            while True:
+                new_row = random.randint(0, size - 1)
+                new_col = random.randint(0, size - 1)
+                if self.world[new_row][new_col] is None:  # Found an empty spot
+                    self.world[new_row][new_col] = actor
+                    print(f'({row}, {col}) with satisfaction {satisfaction} moved to ({new_row},{new_col})')
+                    break
 
 
     def is_valid_location(self, size, row, col):
