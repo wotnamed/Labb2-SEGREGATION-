@@ -86,7 +86,14 @@ class NeighboursApp:
     def update_world(self):
         threshold = 0.7
         # TODO create logic for moving the actors
+        empty = []
 
+        for row in range(len(self.world)-1):
+            for a in range(len(self.world[row])-1):
+                if self.world[row][a] == None:
+                    empty.append((row,a))
+
+        print(empty)
         unhappy = []
 
         for row in range(len(self.world)-1):
@@ -95,6 +102,10 @@ class NeighboursApp:
                     unhappy.append((row,a))
 
         print(unhappy)
+
+
+
+
 
 
 
