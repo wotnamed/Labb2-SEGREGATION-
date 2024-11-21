@@ -37,9 +37,9 @@ class NeighboursApp:
 
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
-        dist = [0.2, 0.3, 0.3, 0.2]
-        possible = ["Red", "Blue", "Green", None]
-        n_locations = 2500 # Number of locations (should be a square and also work for 25000)
+        dist = [0.4, 0.4, 0.2]
+        possible = ["Red", "Blue", None]
+        n_locations = 25000 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
         x = int(n_locations**0.5)
        #  TODO Create and populate world
