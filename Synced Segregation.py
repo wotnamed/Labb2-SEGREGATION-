@@ -17,7 +17,7 @@ class NeighboursApp:
         self.height = 500
         self.margin = 50
         self.dot_size = 0
-        self.interval = 0.05  # in seconds
+        self.interval = 0.5  # in seconds
 
         # Initialize tkinter canvas
         self.root = root
@@ -42,7 +42,6 @@ class NeighboursApp:
         n_locations = 25000 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
         x = int(n_locations**0.5)
-       #  TODO Create and populate world
         for i in range(y):
             self.world.append([])
         for i in self.world:
@@ -82,14 +81,7 @@ class NeighboursApp:
                         bad_neighbours += 1
 
         return 1-(bad_neighbours/total_neighbours)
-
-    def update_world(self):
-        threshold = 0.8
-        size = len(self.world)
-        unhappy = []
-        satisfaction = 0
-        # TODO create logic for moving the actors
-
+    def find_unhappy_actors(self, threshold, unhappy):
         for row in range(len(self.world)):
             for col in range(len(self.world[row])):
                 if self.world[row][col] is None:
@@ -98,10 +90,10 @@ class NeighboursApp:
                 if satisfaction < threshold:
                     unhappy.append((row,col))
 
+    def remove_and_redistribute_actors(self, unhappy, size):
         for row, col in unhappy:
             actor = self.world[row][col]
             self.world[row][col] = None  # Remove actor from current location
-
             # Find a new empty location
             while True:
                 new_row = random.randint(0, size - 1)
@@ -110,6 +102,18 @@ class NeighboursApp:
                     self.world[new_row][new_col] = actor
                     # print(f'({row}, {col}) with satisfaction {satisfaction} moved to ({new_row},{new_col})')
                     break
+
+
+    def update_world(self):
+        threshold = 0.8
+        size = len(self.world)
+        unhappy = []
+        satisfaction = 0
+        self.find_unhappy_actors(threshold, unhappy)
+        self.remove_and_redistribute_actors(unhappy, size)
+
+
+
 
 
     def is_valid_location(self, size, row, col):
