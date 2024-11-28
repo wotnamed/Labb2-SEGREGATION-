@@ -58,12 +58,12 @@ class NeighboursApp: # the container for the program (most variables and functio
         subject = self.world[row_number][column_number].color
         total_rows = len(self.world)
         total_columns = len(self.world[0])
-        check_range = [-1, 0, 1]
+        check_range = [-1, 0, 1]  # Difference between actor coordinate.
 
         total_neighbours = 0
         bad_neighbours = 0
 
-        for diff_y in check_range:
+        for diff_y in check_range:  # Check the actors around the actor in question
             for diff_x in check_range:
                 if diff_y == 0 and diff_x == 0:
                     continue
@@ -73,10 +73,10 @@ class NeighboursApp: # the container for the program (most variables and functio
                 if 0 <= neighbour_row < total_rows and 0 <= neighbour_col < total_columns:
                     neighbour = self.world[neighbour_row][neighbour_col]
                     total_neighbours += 1
-                    if neighbour is not None and neighbour.color != subject:
+                    if neighbour is not None and neighbour.color != subject:  # Self-explanatory
                         bad_neighbours += 1
 
-        return 1-(bad_neighbours/total_neighbours)
+        return 1-(bad_neighbours/total_neighbours)  # The function returns the percentage of all neighbours that are "bad" ie not the same colour as the actor.
 
     def find_unhappy_actors(self, threshold, unhappy):  # Find all unhappy actors and append them to the "unhappy" list.
         for row in range(len(self.world)):
