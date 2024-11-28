@@ -37,7 +37,7 @@ class NeighboursApp:
 
     def init_world(self):
         # Distribution percentages for RED, BLUE, and NONE
-        dist = [0.4, 0.4, 0.2]
+        dist = [0.25, 0.25, 0.5]
         possible = ["Red", "Blue", None]
         n_locations = 25000 # Number of locations (should be a square and also work for 25000)
         y = int(n_locations**0.5)
@@ -84,7 +84,7 @@ class NeighboursApp:
         return 1-(bad_neighbours/total_neighbours)
 
     def update_world(self):
-        threshold = 0.7
+        threshold = 0.8
         size = len(self.world)
         unhappy = []
         satisfaction = 0
@@ -108,7 +108,7 @@ class NeighboursApp:
                 new_col = random.randint(0, size - 1)
                 if self.world[new_row][new_col] is None:  # Found an empty spot
                     self.world[new_row][new_col] = actor
-                    print(f'({row}, {col}) with satisfaction {satisfaction} moved to ({new_row},{new_col})')
+                    # print(f'({row}, {col}) with satisfaction {satisfaction} moved to ({new_row},{new_col})')
                     break
 
 
