@@ -6,7 +6,7 @@ import math
 
 class Actor:
     def __init__(self, color):  # upon initialisation
-        self.color = color  # class colour (determines what other actors it will be "satisfied" with.
+        self.color = color  # class colour (determines what other actors it will be "satisfied" with)
         self.is_satisfied = False   # the attribute that determines whether the actor will be attempted to move or not
 
 
@@ -35,29 +35,36 @@ class NeighboursApp: # the container for the program (most variables and functio
 
         # init an empty world
 
-    def init_world(self):
+    def generate_world(self, n_locations):
+        world = []
         dist = [0.25, 0.25, 0.5]  # the distribution of each colour declared below (the weights used in random.choices)
         possible = ["Red", "Blue", None]  # The possible colours for an agent. None means blank space.
-        n_locations = 25000  # This determines the numbers of "locations" with in the matrix. It should be a product of a^2 where a is a whole number and not below zero.
-        y = int(n_locations**0.5)  # y height equals sqrt number of locations
-        x = int(n_locations**0.5)  # x width equals sqrt number of locations (the grid becomes a square)
+        y = int(n_locations ** 0.5)  # y height equals sqrt number of locations
+        x = int(n_locations ** 0.5)  # x width equals sqrt number of locations (the grid becomes a square)
         for i in range(y):
-            self.world.append([])
-        for i in self.world:
-            for i in range(x):  # for every row in matrix
+            world.append([])
+        for col in world:
+            for row in range(x):  # for every row in matrix
                 value = random.choices(possible, dist)[0]  # Determines whether the item that is about to be assigned is an actor or not and what colour that actor obtains.
                 if value is not None:  # If the item is an actor
-                    self.world[i].append(Actor(value))  # Append the actor to the matrix
+                    world[row].append(Actor(value))  # Append the actor to the matrix
                 else:  # If the item is not an actor
-                    self.world[i].append(None)  # Append None
+                    world[row].append(None)  # Append None
         # coordinates: list[y][x]
+
+        return world
+
+    def init_world(self):
+        n_locations = 25000  # This determines the numbers of "locations" with in the matrix. It should be a product of a^2 where a is a whole number and not below zero.
+
+        self.world = self.generate_world(n_locations)
 
         self.fix_screen_size(n_locations) # Adjust screen size based on the number of locations
 
-    def test_neighbours(self, row_number, column_number):
-        subject = self.world[row_number][column_number].color
-        total_rows = len(self.world)
-        total_columns = len(self.world[0])
+    def test_neighbours(self, world, row_number, column_number):
+        subject = world[row_number][column_number].color
+        total_rows = len(world)
+        total_columns = len(world[0])
         check_range = [-1, 0, 1]  # Difference between actor coordinate.
 
         total_neighbours = 0
@@ -71,19 +78,19 @@ class NeighboursApp: # the container for the program (most variables and functio
                 neighbour_col = column_number + diff_x
 
                 if 0 <= neighbour_row < total_rows and 0 <= neighbour_col < total_columns:
-                    neighbour = self.world[neighbour_row][neighbour_col]
+                    neighbour = world[neighbour_row][neighbour_col]
                     total_neighbours += 1
                     if neighbour is not None and neighbour.color != subject:  # Self-explanatory
                         bad_neighbours += 1
 
-        return 1-(bad_neighbours/total_neighbours)  # The function returns the percentage of all neighbours that are "bad" ie not the same colour as the actor.
+        return 1-(bad_neighbours/total_neighbours)  # The function returns the percentage of all neighbours that are "good" ie the same colour as the actor OR none.
 
     def find_unhappy_actors(self, threshold, unhappy):  # Find all unhappy actors and append them to the "unhappy" list.
         for row in range(len(self.world)):
             for col in range(len(self.world[row])):
                 if self.world[row][col] is None:
                     continue
-                satisfaction = self.test_neighbours(row, col)
+                satisfaction = self.test_neighbours(self.world, row, col)
                 if satisfaction < threshold:
                     unhappy.append((row,col))
 
@@ -149,6 +156,27 @@ def main():
     root.title("Segregation Simulation")
     root.mainloop()
 
+def test_generate_world():
+    root = tk.Tk()
+    app = NeighboursApp(root)
+
+    # Generate a world with a random amount of locations
+    n_locations = (random.randint(2,25))**2
+    world = app.generate_world(n_locations)
+
+    # Test the matrix lengths to ensure the matrix is the correct size
+    assert len(world) == n_locations**0.5
+    assert len(world[0]) == n_locations**0.5
+
+def test_test_neighbours():
+        root = tk.Tk()
+        app = NeighboursApp(root)
+
+        # Hard coded matrix
+        world = [[Actor("Blue"), Actor("Red"), None], [None, Actor("Red"), Actor("Red")], [None, Actor("Blue"), Actor("Red")]]
+
+        # Test for middle actor
+        assert app.test_neighbours(world, 1, 1) == 0.75
 
 if __name__ == "__main__":
     main()
